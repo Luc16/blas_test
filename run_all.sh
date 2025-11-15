@@ -27,19 +27,4 @@ clang standard.c -o clang-matmul -ffast-math -lm -O3 -march=native && ./clang-ma
 echo ""
 echo "6. MLIR"
 
-mlir-opt --blir-matmul-to-func \
-                  -convert-linalg-to-loops \
-                  -lower-affine \
-                  -convert-scf-to-cf \
-                  -expand-strided-metadata \
-                  -memref-expand \
-                  -normalize-memrefs \
-                  -convert-math-to-llvm \
-                  -convert-func-to-llvm \
-                  -convert-arith-to-llvm \
-                  -convert-cf-to-llvm \
-                  -finalize-memref-to-llvm \
-                  -reconcile-unrealized-casts \
-                  -canonicalize \
-                  ../mlir/test/Dialect/BLIR/matmul_run.mlir \
-         | mlir-runner -O3 -e main -entry-point-result=void -shared-libs=libmlir_runner_utils.so
+./run_mlir.sh

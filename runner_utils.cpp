@@ -18,4 +18,8 @@ extern "C" {
 		std::cout << "Performance: " << gflops << " GFLOPs" << std::endl;
 	}
 
+	void print_f64(double value) {
+		std::cout << value << std::endl;
+	}
+
 } // extern "C"
