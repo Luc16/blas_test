@@ -1,5 +1,8 @@
 // Wrap everything in a single module
-!t_sq = tensor<2048x2048xf64>
+!a_t = tensor<2088x2048xf64>    // A: M=2088, K=2048
+!b_t = tensor<2048x2048xf64>    // B: K=2048, N=2048
+!c_t = tensor<2088x2048xf64>    // C: M=2088, N=2048
+
 module {
     func.func private @timestamp() -> i64
     func.func private @print_gflops(f64, f64)
@@ -9,28 +12,27 @@ module {
     // CHECK-NOT:   memref.alloc
     // CHECK:       %C_result = linalg.matmul
     func.func @main() {
-        // Define tensor type alias
-
-        // 1. Create the tensor initialized with 1.0
-        %cst_tensor_val = arith.constant dense<1.0> : !t_sq
+        // 1. Create the tensors initialized with 1.0 (or 0.0 for C)
+        %A_val = arith.constant dense<1.0> : !a_t
+        %B_val = arith.constant dense<1.0> : !b_t
+        %C_val = arith.constant dense<0.0> : !c_t
 
         // 2. Time the linalg.matmul operation
         %start_time = func.call @timestamp() : () -> i64
         
-        // Use %cst_tensor_val directly for A, B, and C_init
+        // Use correct typed tensors for A, B, and C_init
         %C_result = linalg.matmul
-          ins(%cst_tensor_val, %cst_tensor_val : !t_sq, !t_sq)
-         outs(%cst_tensor_val : !t_sq) -> !t_sq
+          ins(%A_val, %B_val : !a_t, !b_t)
+          outs(%C_val : !c_t) -> !c_t
 
         %end_time = func.call @timestamp() : () -> i64
 
-        // 3. Calculate GFLOP/s
-        %size = arith.constant 2048.0 : f64
-        %two = arith.constant 2.0 : f64
-        %size_squared = arith.mulf %size, %size : f64      // N*N
-        %size_cubed = arith.mulf %size_squared, %size : f64 // N*N*N
-        %total_flops = arith.mulf %size_cubed, %two : f64   // (N^3) * 2
-
+        // 3. Calculate GFLOP/s for specific M, N, K
+        // Formula: 2 * M * N * K
+        // M=2088, N=2048, K=2048
+        // 2088 * 2048 * 2048 * 2 = 17,515,413,504 FLOPs
+        
+        %total_flops = arith.constant 17515413504.0 : f64
         %billion = arith.constant 1000000000.0 : f64
 
         // Calculate elapsed time in nanoseconds
@@ -41,16 +43,23 @@ module {
         // Calculate elapsed time in seconds
         %elapsed_s = arith.divf %elapsed_ns_f, %billion : f64
         
-        // Calculate GFLOP/s
+        // Calculate GFLOP/s (Gigaflops = Total Flops / Nanoseconds)
+        // Note: dividing Flops directly by ns is equivalent to (Flops / 1e9) / (ns / 1e9) * 1e9 ???
+        // Standard way: GFLOPS = (Total Ops / 1e9) / Time_in_Seconds
+        // Or simply: Flops / Nanoseconds
         %gflops = arith.divf %total_flops, %elapsed_ns_f : f64
 
         // 4. Print the final result
         call @print_gflops(%gflops, %elapsed_s) : (f64, f64) -> ()
 
-		%c0 = arith.constant 0 : index
-        %first_element = tensor.extract %C_result[%c0, %c0] : !t_sq
-        call @print_f64(%first_element) : (f64) -> ()
 
-	return
+        // Verify result (print first element)
+        %c0 = arith.constant 0 : index
+        %first_element = tensor.extract %C_result[%c0, %c0] : !c_t
+        call @print_f64(%first_element) : (f64) -> ()
+        
+
+    return
     }
-} // <--- Close the module
+}
+
