@@ -1,6 +1,6 @@
 import sys
 
-def get_verification_code(dtype):
+def get_verification_code(dtype, matrix_name="C_result"):
     """
     Generates the verification code block.
     If f32, we must extend to f64 before printing.
@@ -9,17 +9,15 @@ def get_verification_code(dtype):
     if dtype == "f32":
         return f"""
         // Verify result (print first element)
-        %c0 = arith.constant 0 : index
-        %first_element_raw = tensor.extract %C_result[%c0, %c0] : !c_t
-        %first_element = arith.extf %first_element_raw : {dtype} to f64
-        call @print_f64(%first_element) : (f64) -> ()
+        %first_element_raw_{matrix_name} = tensor.extract %{matrix_name}[%c0, %c0] : !c_t
+        %first_element_{matrix_name} = arith.extf %first_element_raw_{matrix_name} : {dtype} to f64
+        call @print_f64(%first_element_{matrix_name}) : (f64) -> ()
         """
     elif dtype == "f64":
         return f"""
         // Verify result (print first element)
-        %c0 = arith.constant 0 : index
-        %first_element = tensor.extract %C_result[%c0, %c0] : !c_t
-        call @print_f64(%first_element) : (f64) -> ()
+        %first_element_{matrix_name} = tensor.extract %{matrix_name}[%c0, %c0] : !c_t
+        call @print_f64(%first_element_{matrix_name}) : (f64) -> ()
         """
     else:
         # Fallback for other types if needed
@@ -33,6 +31,7 @@ def generate_mlir(M, N, K, dtype="f32"):
     
     # Generate the verification block based on dtype
     verification_block = get_verification_code(dtype)
+    verification_block2 = get_verification_code(dtype, matrix_name="C_result0")
 
     mlir_code = f"""// Wrap everything in a single module
 !a_t = tensor<{M}x{K}x{dtype}>    // A: M={M}, K={K}
@@ -48,10 +47,17 @@ module {{
     // CHECK-NOT:   memref.alloc
     // CHECK:       %C_result = linalg.matmul
     func.func @main() {{
+        %c0 = arith.constant 0 : index
+
         // 1. Create the tensors initialized with 1.0 (or 0.0 for C)
         %A_val = arith.constant dense<1.0> : !a_t
-        %B_val = arith.constant dense<1.0> : !b_t
-        %C_val = arith.constant dense<0.0> : !c_t
+        %B_val = arith.constant dense<2.0> : !b_t
+        %C_val = arith.constant dense<3.0> : !c_t
+
+        %C_result0 = linalg.matmul
+          ins(%A_val, %B_val : !a_t, !b_t)
+          outs(%C_val : !c_t) -> !c_t
+
 
         // 2. Time the linalg.matmul operation
         %start_time = func.call @timestamp() : () -> i64
@@ -89,6 +95,7 @@ module {{
         call @print_gflops(%gflops, %elapsed_s) : (f64, f64) -> ()
 
 {verification_block}
+{verification_block2}
 
     return
     }}

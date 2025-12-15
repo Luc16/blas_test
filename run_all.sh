@@ -24,6 +24,11 @@ echo ""
 echo "3. Intel MKL:"
 gcc mkl_s.c -o mkl -O3 -march=native -fopenmp -I/usr/include/mkl -lmkl_rt -lpthread -lm -ldl && env MKL_NUM_THREADS=1 ./mkl -N $matrix_size -M $matrix_size -K $matrix_size
 
+echo ""
+echo "6. MLIR"
+
+./run_mlir.sh
+
 else
 
 echo "1. OpenBLAS:"
