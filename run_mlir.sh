@@ -11,19 +11,20 @@ fi
 
 mlir-opt \
 	-one-shot-bufferize="bufferize-function-boundaries" \
+	-cse -canonicalize \
     -convert-linalg-to-loops \
 	-convert-vector-to-scf \
-	-convert-vector-to-llvm \
-	-convert-scf-to-cf \
-	-expand-strided-metadata \
-	-cse \
-	-loop-invariant-code-motion \
-	-memref-expand \
 	-normalize-memrefs \
+	-expand-strided-metadata \
 	-lower-affine \
+	-memref-expand \
+	-cse -canonicalize \
+	-loop-invariant-code-motion \
+	-convert-vector-to-llvm \
 	-convert-math-to-llvm \
-	-convert-arith-to-llvm \
+	-convert-scf-to-cf \
 	-convert-cf-to-llvm \
+	-convert-arith-to-llvm \
 	-finalize-memref-to-llvm \
 	-convert-func-to-llvm \
 	-reconcile-unrealized-casts \
