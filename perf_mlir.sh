@@ -65,4 +65,11 @@ sudo perf annotate -i perf.blis.data -M intel --stdio > blis.asm
 sudo perf annotate -i perf.mkl.data -M intel --stdio > mkl.asm
 
 echo "Assembly dumped to openblas.asm, blis.asm, and mkl.asm"
+
+echo "=== Dumping MLIR Generated Assembly ==="
+
+llvm-objdump -d --no-show-raw-insn kernel.o > mlir.asm
+
+echo "MLIR assembly dumped to mlir.asm"
+
 fi

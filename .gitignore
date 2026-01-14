@@ -3,3 +3,4 @@ kernel.o
 kernel.asm
 benchmark_bin
 perf.*
+*.asm
