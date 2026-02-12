@@ -33,6 +33,7 @@ mlir-opt \
 
 # mlir-runner -O3 -e main -shared-libs=libmlir_runner_utils.so tmp/matmul_lowered.mlir
 # mlir-runner -O3 -e main -entry-point-result=void -shared-libs=libmy_runner_utils.so,../../llvm-project/build/lib/libmlir_c_runner_utils.so tmp/matmul_lowered.mlir
+# echo "Running MLIR with mlir-runner..."
 mlir-runner -O3 -e main -entry-point-result=void -shared-libs=libmy_runner_utils.so,../../llvm-project/build/lib/libmlir_c_runner_utils.so  -dump-object-file -object-filename=kernel.o tmp/matmul_lowered.mlir
 # | mlir-runner -O3 -e main -entry-point-result=void -shared-libs=libmlir_runner_utils.so
 

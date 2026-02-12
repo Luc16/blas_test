@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/luc/Documents/Mestrado/SGemmTransform/blas_test",
+  "command": "/usr/bin/clang++ -DGTEST_HAS_RTTI=0 -DLLVM_BUILD_STATIC -I/home/luc/Documents/Mestrado/llvm-project/llvm/include -I/home/luc/Documents/Mestrado/llvm-project/build/include -I/home/luc/Documents/Mestrado/llvm-project/mlir/include -I/home/luc/Documents/Mestrado/llvm-project/build/tools/mlir/include -I/home/luc/Documents/Mestrado/SGemmTransform/blas_test -I/home/luc/Documents/Mestrado/SGemmTransform/blas_test/include -I/home/luc/Documents/Mestrado/SGemmTransform/include -g  -fno-exceptions -funwind-tables -fno-rtti -std=gnu++17 -o CMakeFiles/transform-opt.dir/transform-opt/transform-opt.cpp.o -c /home/luc/Documents/Mestrado/SGemmTransform/transform-opt/transform-opt.cpp",
+  "file": "/home/luc/Documents/Mestrado/SGemmTransform/transform-opt/transform-opt.cpp"
+},
+{
+  "directory": "/home/luc/Documents/Mestrado/SGemmTransform/blas_test",
+  "command": "/usr/bin/clang++ -DGTEST_HAS_RTTI=0 -I/home/luc/Documents/Mestrado/llvm-project/llvm/include -I/home/luc/Documents/Mestrado/llvm-project/build/include -I/home/luc/Documents/Mestrado/llvm-project/mlir/include -I/home/luc/Documents/Mestrado/llvm-project/build/tools/mlir/include -I/home/luc/Documents/Mestrado/SGemmTransform/blas_test -I/home/luc/Documents/Mestrado/SGemmTransform/blas_test/include -I/home/luc/Documents/Mestrado/SGemmTransform/include -g  -fno-exceptions -funwind-tables -fno-rtti -std=gnu++17 -o lib/CMakeFiles/obj.SGemmDialect.dir/SGemm.cpp.o -c /home/luc/Documents/Mestrado/SGemmTransform/lib/SGemm.cpp",
+  "file": "/home/luc/Documents/Mestrado/SGemmTransform/lib/SGemm.cpp"
+}
+]

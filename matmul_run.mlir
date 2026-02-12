@@ -1,7 +1,7 @@
 // Wrap everything in a single module
-!a_t = tensor<2088x2048xf32>    // A: M=2088, K=2048
-!b_t = tensor<2048x2048xf32>    // B: K=2048, N=2048
-!c_t = tensor<2088x2048xf32>    // C: M=2088, N=2048
+!a_t = tensor<3984x3984xf64>    // A: M=3984, K=3984
+!b_t = tensor<3984x3984xf64>    // B: K=3984, N=3984
+!c_t = tensor<3984x3984xf64>    // C: M=3984, N=3984
 
 module {
     func.func private @timestamp() -> i64
@@ -36,10 +36,10 @@ module {
 
         // 3. Calculate GFLOP/s for specific M, N, K
         // Formula: 2 * M * N * K
-        // M=2088, N=2048, K=2048
-        // 2088 * 2048 * 2048 * 2 = 17,515,413,504 FLOPs
+        // M=3984, N=3984, K=3984
+        // 3984 * 3984 * 3984 * 2 = 126,470,135,808 FLOPs
         
-        %total_flops = arith.constant 17515413504.0 : f64
+        %total_flops = arith.constant 126470135808.0 : f64
         %billion = arith.constant 1000000000.0 : f64
 
         // Calculate elapsed time in nanoseconds
@@ -61,14 +61,12 @@ module {
 
 
         // Verify result (print first element)
-        %first_element_raw_C_result = tensor.extract %C_result[%c0, %c0] : !c_t
-        %first_element_C_result = arith.extf %first_element_raw_C_result : f32 to f64
+        %first_element_C_result = tensor.extract %C_result[%c0, %c0] : !c_t
         call @print_f64(%first_element_C_result) : (f64) -> ()
         
 
         // Verify result (print first element)
-        %first_element_raw_C_result0 = tensor.extract %C_result0[%c0, %c0] : !c_t
-        %first_element_C_result0 = arith.extf %first_element_raw_C_result0 : f32 to f64
+        %first_element_C_result0 = tensor.extract %C_result0[%c0, %c0] : !c_t
         call @print_f64(%first_element_C_result0) : (f64) -> ()
         
 
